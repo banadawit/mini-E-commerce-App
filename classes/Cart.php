@@ -15,6 +15,7 @@ class Cart
     {
         $product_id = (int) $product_id;
         $quantity = (int) $quantity;
+
         if ($quantity < 1) {
             $quantity = 1;
         }
@@ -48,6 +49,7 @@ class Cart
             return;
         }
 
+        // Only update if the item is actually in the cart
         if (isset($_SESSION['cart'][$product_id])) {
             $_SESSION['cart'][$product_id] = $quantity;
         }
@@ -56,5 +58,15 @@ class Cart
     public function clear()
     {
         $_SESSION['cart'] = [];
+    }
+
+    // NEW: Returns total number of items (e.g., for the navbar badge)
+    public function getTotalQuantity()
+    {
+        $total = 0;
+        foreach ($_SESSION['cart'] as $qty) {
+            $total += $qty;
+        }
+        return $total;
     }
 }

@@ -12,6 +12,11 @@ class Product extends BaseModel
                   VALUES (:name, :description, :price, :stock, :category_id, :image)";
 
         $stmt = $this->db->prepare($query);
+
+        // Basic sanitization
+        $name = htmlspecialchars(strip_tags($name));
+        $description = htmlspecialchars(strip_tags($description));
+
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':price', $price);
@@ -22,6 +27,7 @@ class Product extends BaseModel
         return $stmt->execute();
     }
 
+    // UPDATED: Simple getAll for Admin usage (lists everything)
     public function getAll()
     {
         $query = "SELECT p.*, c.name as category_name 
@@ -33,9 +39,46 @@ class Product extends BaseModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // NEW: For Frontend - Supports Search and Pagination
+    public function getProducts($search = "", $limit = 6, $offset = 0)
+    {
+        $query = "SELECT p.*, c.name as category_name 
+                  FROM " . $this->table . " p 
+                  LEFT JOIN categories c ON p.category_id = c.id 
+                  WHERE p.name LIKE :search OR p.description LIKE :search
+                  ORDER BY p.created_at DESC
+                  LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($query);
+
+        $searchTerm = "%{$search}%";
+        $stmt->bindParam(':search', $searchTerm);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // NEW: Helper to count products for pagination links
+    public function countProducts($search = "")
+    {
+        $query = "SELECT COUNT(*) as total FROM " . $this->table . " WHERE name LIKE :search OR description LIKE :search";
+        $stmt = $this->db->prepare($query);
+        $searchTerm = "%{$search}%";
+        $stmt->bindParam(':search', $searchTerm);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
+    }
+
     public function getById($id)
     {
-        $query = "SELECT * FROM " . $this->table . " WHERE id = :id";
+        // Added join here too, in case you want to show Category Name on the detail page
+        $query = "SELECT p.*, c.name as category_name 
+                  FROM " . $this->table . " p 
+                  LEFT JOIN categories c ON p.category_id = c.id 
+                  WHERE p.id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
@@ -52,16 +95,17 @@ class Product extends BaseModel
 
     public function update($id, $name, $description, $price, $stock, $category_id, $image = null)
     {
+        $name = htmlspecialchars(strip_tags($name));
+        $description = htmlspecialchars(strip_tags($description));
+
         if ($image) {
-            // Update with new image
             $query = "UPDATE " . $this->table . " 
-                  SET name=:name, description=:description, price=:price, stock=:stock, category_id=:category_id, image=:image 
-                  WHERE id=:id";
+                      SET name=:name, description=:description, price=:price, stock=:stock, category_id=:category_id, image=:image 
+                      WHERE id=:id";
         } else {
-            // Update without changing the image
             $query = "UPDATE " . $this->table . " 
-                  SET name=:name, description=:description, price=:price, stock=:stock, category_id=:category_id 
-                  WHERE id=:id";
+                      SET name=:name, description=:description, price=:price, stock=:stock, category_id=:category_id 
+                      WHERE id=:id";
         }
 
         $stmt = $this->db->prepare($query);

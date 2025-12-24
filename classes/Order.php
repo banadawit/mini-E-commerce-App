@@ -1,9 +1,11 @@
 <?php
 require_once 'BaseModel.php';
 
-class Order extends BaseModel {
-    
-    public function createOrder($user_id, $total_price, $cart_items) {
+class Order extends BaseModel
+{
+
+    public function createOrder($user_id, $total_price, $cart_items)
+    {
         try {
             $this->db->beginTransaction();
 
@@ -15,16 +17,25 @@ class Order extends BaseModel {
 
             // 2. Insert into order_items and Reduce Stock
             foreach ($cart_items as $product_id => $quantity) {
-                // Get current price
+                // Get current price and stock
                 $stmt = $this->db->prepare("SELECT price, stock FROM products WHERE id = ?");
                 $stmt->execute([$product_id]);
                 $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$product) {
+                    throw new Exception("Product ID $product_id not found.");
+                }
+
+                // CRITICAL CHECK: Prevent negative stock
+                if ($product['stock'] < $quantity) {
+                    throw new Exception("Insufficient stock for product ID $product_id");
+                }
 
                 // Insert Item
                 $stmt = $this->db->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
                 $stmt->execute([$order_id, $product_id, $quantity, $product['price']]);
 
-                // Reduce Stock (Requirement 2.7)
+                // Reduce Stock
                 $new_stock = $product['stock'] - $quantity;
                 $stmt = $this->db->prepare("UPDATE products SET stock = ? WHERE id = ?");
                 $stmt->execute([$new_stock, $product_id]);
@@ -34,17 +45,22 @@ class Order extends BaseModel {
             return true;
         } catch (Exception $e) {
             $this->db->rollBack();
+            // Optional: Log the error message $e->getMessage()
             return false;
         }
     }
 
-    public function getAllOrders() {
+    public function getAllOrders()
+    {
         $query = "SELECT o.*, u.name as customer_name FROM orders o 
-                  JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC";
+                  JOIN users u ON o.user_id = u.id 
+                  ORDER BY o.created_at DESC";
         return $this->db->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getOrdersByUser($user_id) {
+    public function getOrdersByUser($user_id)
+    {
+        // Group Concat allows us to see a summary of items (e.g., "iPhone, Charger") directly in the list
         $query = "SELECT o.*,
                          COUNT(oi.id) as items_count,
                          GROUP_CONCAT(DISTINCT p.name SEPARATOR ', ') AS product_names
@@ -59,5 +75,27 @@ class Order extends BaseModel {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    // NEW: For the "Order Details" page
+    public function getOrderItems($order_id)
+    {
+        $query = "SELECT oi.*, p.name, p.image 
+                  FROM order_items oi 
+                  JOIN products p ON oi.product_id = p.id 
+                  WHERE oi.order_id = :order_id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':order_id', $order_id);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // NEW: For Admin to update status (Requirement 2.6)
+    public function updateStatus($order_id, $status)
+    {
+        $query = "UPDATE orders SET status = :status WHERE id = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':id', $order_id);
+        return $stmt->execute();
+    }
 }
-?>

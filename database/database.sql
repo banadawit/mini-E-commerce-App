@@ -41,13 +41,21 @@ CREATE TABLE orders (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- 5. Order Items Table (Many-to-Many Relationship)
+-- 5. Order Items Table
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT,
-    product_id INT,
+    product_id INT, -- Made nullable for safety
     quantity INT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
+    price DECIMAL(10,2) NOT NULL, -- Store price at time of purchase
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
 );
+
+-- OPTIONAL: Insert a default Admin User
+-- Password is 'admin123' (hashed using BCRYPT)
+INSERT INTO users (name, email, password, role) 
+VALUES ('Super Admin', 'admin@shop.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');
+
+-- OPTIONAL: Insert some dummy categories
+INSERT INTO categories (name) VALUES ('Electronics'), ('Clothing'), ('Books');

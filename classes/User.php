@@ -7,20 +7,33 @@ class User extends BaseModel
 
     public function register($name, $email, $password)
     {
-        // Hash the password for security
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        try {
+            // Hash the password for security
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        $query = "INSERT INTO " . $this->table . " (name, email, password, role) VALUES (:name, :email, :password, 'customer')";
-        $stmt = $this->db->prepare($query);
+            $query = "INSERT INTO " . $this->table . " (name, email, password, role) VALUES (:name, :email, :password, 'customer')";
+            $stmt = $this->db->prepare($query);
 
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $hashed_password);
+            // Sanitize inputs (basic layer)
+            $name = htmlspecialchars(strip_tags($name));
+            $email = htmlspecialchars(strip_tags($email));
 
-        if ($stmt->execute()) {
-            return true;
+            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':password', $hashed_password);
+
+            if ($stmt->execute()) {
+                return true;
+            }
+            return false;
+        } catch (PDOException $e) {
+            // If the error is a Duplicate Entry (Error code 23000), return false
+            if ($e->getCode() == 23000) {
+                return false;
+            }
+            // For other errors, you might want to log them
+            return false;
         }
-        return false;
     }
 
     public function login($email, $password)
@@ -33,7 +46,7 @@ class User extends BaseModel
         if ($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (password_verify($password, $row['password'])) {
-                // Password is correct, start session
+                // Password is correct, return user data
                 return $row;
             }
         }

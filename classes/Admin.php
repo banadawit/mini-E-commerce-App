@@ -1,47 +1,28 @@
 <?php
-require_once 'User.php';
+require_once 'BaseModel.php';
 
-// Inheritance: Admin inherits all methods and properties from User
-class Admin extends User
+class Admin extends BaseModel
 {
-
-    /**
-     * Get summary statistics for the Admin Dashboard.
-     * This demonstrates specialized business logic only an admin can access.
-     */
     public function getDashboardStats()
     {
         $stats = [];
 
-        // 1. Get total number of products
-        $stmt = $this->db->query("SELECT COUNT(*) as total FROM products");
-        $stats['total_products'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        // 1. Total Products
+        $stmt = $this->db->query("SELECT COUNT(*) as count FROM products");
+        $stats['total_products'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-        // 2. Get total number of orders
-        $stmt = $this->db->query("SELECT COUNT(*) as total FROM orders");
-        $stats['total_orders'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        // 2. Total Orders
+        $stmt = $this->db->query("SELECT COUNT(*) as count FROM orders");
+        $stats['total_orders'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-        // 3. Get total revenue
+        // 3. Total Revenue (Sum of all orders)
         $stmt = $this->db->query("SELECT SUM(total_price) as total FROM orders");
-        $revenue = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-        $stats['total_revenue'] = $revenue ? $revenue : 0;
+        $stats['total_revenue'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 
-        // 4. Get total registered customers
-        $stmt = $this->db->query("SELECT COUNT(*) as total FROM users WHERE role = 'customer'");
-        $stats['total_customers'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        // 4. Total Customers
+        $stmt = $this->db->query("SELECT COUNT(*) as count FROM users WHERE role = 'customer'");
+        $stats['total_customers'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
         return $stats;
-    }
-
-    /**
-     * Admin can update order status (Pending, Shipped, Delivered)
-     */
-    public function updateOrderStatus($order_id, $status)
-    {
-        $query = "UPDATE orders SET status = :status WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindParam(':status', $status);
-        $stmt->bindParam(':id', $order_id);
-        return $stmt->execute();
     }
 }
