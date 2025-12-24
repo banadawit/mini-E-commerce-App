@@ -47,7 +47,7 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow mb-4">
         <div class="container">
-            <a class="navbar-brand fw-bold text-uppercase" href="<?php echo BASE_URL; ?>index.php">
+            <a class="navbar-brand fw-bold text-uppercase" href="<?php echo $homeLink; ?>">
                 <i class="bi bi-shop text-warning fs-4 me-1"></i> My Shop
             </a>
 
