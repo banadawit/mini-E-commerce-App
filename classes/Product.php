@@ -39,20 +39,45 @@ class Product extends BaseModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // NEW: For Frontend - Supports Search and Pagination
-    public function getProducts($search = "", $limit = 6, $offset = 0)
+    // NEW: For Frontend - Supports Search, Pagination, and Sorting
+    public function getProducts($search = "", $limit = 6, $offset = 0, $category_id = null, $sort = 'newest')
     {
         $query = "SELECT p.*, c.name as category_name 
                   FROM " . $this->table . " p 
                   LEFT JOIN categories c ON p.category_id = c.id 
-                  WHERE p.name LIKE :search OR p.description LIKE :search
-                  ORDER BY p.created_at DESC
-                  LIMIT :limit OFFSET :offset";
+                  WHERE (p.name LIKE :search OR p.description LIKE :search)";
+        
+        // Add category filter if specified
+        if ($category_id) {
+            $query .= " AND p.category_id = :category_id";
+        }
+        
+        // Add sorting
+        switch ($sort) {
+            case 'price_asc':
+                $query .= " ORDER BY p.price ASC";
+                break;
+            case 'price_desc':
+                $query .= " ORDER BY p.price DESC";
+                break;
+            case 'popular':
+                $query .= " ORDER BY p.popularity DESC";
+                break;
+            case 'newest':
+            default:
+                $query .= " ORDER BY p.created_at DESC";
+        }
+        
+        // Add pagination
+        $query .= " LIMIT :limit OFFSET :offset";
 
         $stmt = $this->db->prepare($query);
 
         $searchTerm = "%{$search}%";
         $stmt->bindParam(':search', $searchTerm);
+        if ($category_id) {
+            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+        }
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 
@@ -61,12 +86,21 @@ class Product extends BaseModel
     }
 
     // NEW: Helper to count products for pagination links
-    public function countProducts($search = "")
+    public function countProducts($search = "", $category_id = null)
     {
-        $query = "SELECT COUNT(*) as total FROM " . $this->table . " WHERE name LIKE :search OR description LIKE :search";
+        $query = "SELECT COUNT(*) as total FROM " . $this->table . " WHERE (name LIKE :search OR description LIKE :search)";
+        
+        if ($category_id) {
+            $query .= " AND category_id = :category_id";
+        }
+        
         $stmt = $this->db->prepare($query);
         $searchTerm = "%{$search}%";
         $stmt->bindParam(':search', $searchTerm);
+        
+        if ($category_id) {
+            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+        }
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row['total'];
