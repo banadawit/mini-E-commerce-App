@@ -89,7 +89,7 @@ $orders = $orderObj->getAllOrders();
                                         <?php echo htmlspecialchars($o['customer_name']); ?>
                                     </td>
                                     <td><?php echo date("M d, Y", strtotime($o['created_at'])); ?></td>
-                                    <td class="fw-bold text-success">$<?php echo number_format($o['total_price'], 2); ?></td>
+                                    <td class="fw-bold text-success">ETB <?php echo number_format($o['total_price'], 2); ?></td>
                                     <td>
                                         <span class="badge <?php echo $badgeClass; ?> rounded-pill">
                                             <?php echo $o['status']; ?>

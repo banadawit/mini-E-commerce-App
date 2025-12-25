@@ -52,8 +52,8 @@ $items = $cartObj->getItems();
                         <table class="table table-hover align-middle border">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 10%;">Image</th>
-                                    <th style="width: 40%;">Product</th>
+                                    <th style="width: 12%;">Image</th>
+                                    <th style="width: 38%;">Product</th>
                                     <th style="width: 15%;">Price</th>
                                     <th style="width: 20%;">Quantity</th>
                                     <th style="width: 15%;">Total</th>
@@ -70,11 +70,11 @@ $items = $cartObj->getItems();
                                     $subtotal = $p['price'] * $qty;
                                     $grand_total += $subtotal;
 
-                                    $img = !empty($p['image']) ? "assets/images/products/" . $p['image'] : "https://via.placeholder.com/50";
+                                    $img = !empty($p['image']) ? "assets/images/products/" . $p['image'] : "https://via.placeholder.com/80";
                                 ?>
                                     <tr>
-                                        <td>
-                                            <img src="<?php echo $img; ?>" alt="Product" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                        <td class="text-center">
+                                            <img src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover; display: block; margin: 0 auto;">
                                         </td>
                                         <td>
                                             <a href="product.php?id=<?php echo $id; ?>" class="text-decoration-none fw-bold text-dark">
@@ -82,13 +82,13 @@ $items = $cartObj->getItems();
                                             </a>
                                             <div class="small text-muted">Stock: <?php echo $p['stock']; ?></div>
                                         </td>
-                                        <td>$<?php echo number_format($p['price'], 2); ?></td>
+                                        <td>ETB <?php echo number_format($p['price'], 2); ?></td>
                                         <td>
                                             <input type="number" name="quantities[<?php echo $id; ?>]" value="<?php echo $qty; ?>" min="1" max="<?php echo $p['stock']; ?>" class="form-control form-control-sm">
                                         </td>
-                                        <td class="fw-bold">$<?php echo number_format($subtotal, 2); ?></td>
+                                        <td class="fw-bold">ETB <?php echo number_format($subtotal, 2); ?></td>
                                         <td>
-                                            <a href="cart.php?remove=<?php echo $id; ?>" class="text-danger" title="Remove Item" onclick="return confirm('Are you sure?');">
+                                            <a href="#" class="text-danger remove-item" title="Remove Item" data-product-id="<?php echo $id; ?>" data-bs-toggle="modal" data-bs-target="#removeCartItemModal">
                                                 <i class="bi bi-trash-fill"></i>
                                             </a>
                                         </td>
@@ -115,7 +115,7 @@ $items = $cartObj->getItems();
                             <hr>
                             <div class="d-flex justify-content-between mb-4">
                                 <span class="fs-5 fw-bold">Total:</span>
-                                <span class="fs-5 fw-bold text-success">$<?php echo number_format($grand_total, 2); ?></span>
+                                <span class="fs-5 fw-bold text-success">ETB <?php echo number_format($grand_total, 2); ?></span>
                             </div>
 
                             <a href="checkout.php" class="btn btn-success w-100 py-2">
@@ -129,5 +129,41 @@ $items = $cartObj->getItems();
 
     <?php endif; ?>
 </div>
+
+<!-- Remove Cart Item Confirmation Modal -->
+<div class="modal fade" id="removeCartItemModal" tabindex="-1" aria-labelledby="removeCartItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="removeCartItemModalLabel">
+                    <i class="bi bi-trash-fill"></i> Remove Item
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to remove this product from your cart?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmRemoveCartItem" class="btn btn-danger">Remove</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var removeButtons = document.querySelectorAll('.remove-item');
+    var confirmRemoveBtn = document.getElementById('confirmRemoveCartItem');
+    
+    removeButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            var productId = this.getAttribute('data-product-id');
+            confirmRemoveBtn.href = 'cart.php?remove=' + productId;
+        });
+    });
+});
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

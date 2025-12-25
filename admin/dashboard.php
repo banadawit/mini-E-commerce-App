@@ -76,7 +76,7 @@ $stats = $adminObj->getDashboardStats();
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="card-title text-uppercase">Revenue</h6>
-                        <h2 class="mb-0">$<?php echo number_format($stats['total_revenue'], 2); ?></h2>
+                        <h2 class="mb-0">ETB <?php echo number_format($stats['total_revenue'], 2); ?></h2>
                     </div>
                     <i class="bi bi-currency-dollar fs-1 opacity-50"></i>
                 </div>

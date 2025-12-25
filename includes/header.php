@@ -40,6 +40,19 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
             color: #dc3545 !important;
             /* Bootstrap Danger Red */
         }
+        
+        /* View Details button styling - white background by default, black on hover */
+        .btn-outline-dark {
+            background-color: white;
+            border-color: #212529;
+            color: #212529;
+        }
+        
+        .btn-outline-dark:hover {
+            background-color: #212529;
+            border-color: #212529;
+            color: white;
+        }
     </style>
 </head>
 

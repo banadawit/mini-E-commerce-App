@@ -77,7 +77,7 @@ $totalPages = ceil($totalProducts / $limit);
 
                         <div class="d-flex justify-content-between align-items-center mb-3 mt-auto">
                             <span class="text-muted small">Price:</span>
-                            <span class="fs-5 fw-bold text-success">$<?php echo number_format($p['price'], 2); ?></span>
+                            <span class="fs-5 fw-bold text-success">ETB <?php echo number_format($p['price'], 2); ?></span>
                         </div>
 
                         <div class="mb-3">
@@ -95,7 +95,7 @@ $totalPages = ceil($totalProducts / $limit);
                         </div>
 
                         <div class="d-grid">
-                            <a href="admin/edit_product.php?id=<?php echo $p['id']; ?>" class="btn btn-dark btn-sm">
+                            <a href="admin/edit_product.php?id=<?php echo $p['id']; ?>" class="btn btn-outline-dark btn-sm">
                                 <i class="bi bi-pencil-square"></i> Edit Details
                             </a>
                         </div>

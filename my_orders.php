@@ -73,7 +73,7 @@ $orders = $orderObj->getOrdersByUser($_SESSION['user_id']);
                                         <?php echo htmlspecialchars($order['product_names']); ?>
                                     </td>
                                     <td><span class="badge bg-light text-dark border"><?php echo $order['items_count']; ?></span></td>
-                                    <td class="fw-bold text-success">$<?php echo number_format($order['total_price'], 2); ?></td>
+                                    <td class="fw-bold text-success">ETB <?php echo number_format($order['total_price'], 2); ?></td>
                                     <td>
                                         <span class="badge <?php echo $statusClass; ?>">
                                             <?php echo htmlspecialchars($order['status']); ?>
