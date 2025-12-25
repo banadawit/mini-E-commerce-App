@@ -21,6 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_name'] = $userData['name'];
         $_SESSION['user_role'] = $userData['role'];
 
+        // Load the user's cart after successful login
+        require_once '../classes/Cart.php';
+        $cart = new Cart();
+        $cart->loadUserCart();
+
         if ($userData['role'] == 'admin') {
             header("Location: ../admin/dashboard.php");
         } else {

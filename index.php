@@ -1,3 +1,4 @@
+
 <?php
 require_once 'includes/header.php';
 require_once 'classes/Product.php';
@@ -61,7 +62,7 @@ $totalPages = ceil($totalProducts / $limit);
                         <p class="card-text small text-muted text-truncate mb-3"><?php echo htmlspecialchars($p['description']); ?></p>
 
                         <div class="d-flex justify-content-between align-items-center mb-3 mt-auto">
-                            <span class="fs-5 fw-bold text-success">$<?php echo number_format($p['price'], 2); ?></span>
+                            <span class="fs-5 fw-bold text-success">ETB <?php echo number_format($p['price'], 2); ?></span>
 
                             <?php if ($p['stock'] > 0): ?>
                                 <span class="badge bg-light text-success border border-success">
@@ -74,7 +75,8 @@ $totalPages = ceil($totalProducts / $limit);
                             <?php endif; ?>
                         </div>
 
-                        <div class="d-grid">
+
+<div class="d-grid">
                             <a href="product.php?id=<?php echo $p['id']; ?>" class="btn btn-outline-dark btn-sm">
                                 View Details <i class="bi bi-arrow-right"></i>
                             </a>

@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_to_cart'])) {
                 <?php endif; ?>
             </div>
 
-            <h3 class="text-success mb-4">$<?php echo number_format($product['price'], 2); ?></h3>
+            <h3 class="text-success mb-4">ETB <?php echo number_format($product['price'], 2); ?></h3>
 
             <p class="lead text-muted"><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
 

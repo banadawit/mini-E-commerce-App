@@ -113,9 +113,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Price ($)</label>
+                                <label class="form-label">Price (ETB)</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">$</span>
+                                    <span class="input-group-text">ETB</span>
                                     <input type="number" name="price" class="form-control" step="0.01" value="<?php echo $product['price']; ?>" required>
                                 </div>
                             </div>

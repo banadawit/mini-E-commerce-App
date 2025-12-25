@@ -79,7 +79,7 @@ $products = $productObj->getAll();
                                     </td>
                                     <td class="fw-bold text-dark"><?php echo htmlspecialchars($p['name']); ?></td>
                                     <td><span class="badge bg-secondary"><?php echo htmlspecialchars($p['category_name'] ?? 'None'); ?></span></td>
-                                    <td>$<?php echo number_format($p['price'], 2); ?></td>
+                                    <td>ETB <?php echo number_format($p['price'], 2); ?></td>
                                     <td>
                                         <?php if ($p['stock'] < 5): ?>
                                             <span class="text-danger fw-bold"><?php echo $p['stock']; ?> (Low)</span>
@@ -91,7 +91,7 @@ $products = $productObj->getAll();
                                         <a href="edit_product.php?id=<?php echo $p['id']; ?>" class="btn btn-sm btn-primary" title="Edit">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <a href="manage_products.php?delete=<?php echo $p['id']; ?>" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this product? This cannot be undone.')">
+                                        <a href="#" class="btn btn-sm btn-danger delete-product" title="Delete" data-product-id="<?php echo $p['id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                             <i class="bi bi-trash-fill"></i>
                                         </a>
                                     </td>
@@ -108,5 +108,41 @@ $products = $productObj->getAll();
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="bi bi-trash-fill"></i> Delete Product
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this product?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="confirmDelete" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var deleteButtons = document.querySelectorAll('.delete-product');
+    var confirmDeleteBtn = document.getElementById('confirmDelete');
+    
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            var productId = this.getAttribute('data-product-id');
+            confirmDeleteBtn.href = 'manage_products.php?delete=' + productId;
+        });
+    });
+});
+</script>
 
 <?php require_once '../includes/footer.php'; ?>

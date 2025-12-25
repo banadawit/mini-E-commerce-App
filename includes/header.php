@@ -40,6 +40,19 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
             color: #dc3545 !important;
             /* Bootstrap Danger Red */
         }
+        
+        /* View Details button styling - white background by default, black on hover */
+        .btn-outline-dark {
+            background-color: white;
+            border-color: #212529;
+            color: #212529;
+        }
+        
+        .btn-outline-dark:hover {
+            background-color: #212529;
+            border-color: #212529;
+            color: white;
+        }
     </style>
 </head>
 
@@ -122,13 +135,6 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
         <?php if (isset($_GET['error'])): ?>
             <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i> <?php echo htmlspecialchars($_GET['error']); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i> <?php echo htmlspecialchars($_GET['success']); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>

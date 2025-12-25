@@ -81,16 +81,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <?php foreach ($order_details as $item): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($item['name']); ?></td>
-                                    <td>$<?php echo number_format($item['price'], 2); ?></td>
+                                    <td>ETB <?php echo number_format($item['price'], 2); ?></td>
                                     <td><?php echo $item['qty']; ?></td>
-                                    <td class="text-end">$<?php echo number_format($item['subtotal'], 2); ?></td>
+                                    <td class="text-end">ETB <?php echo number_format($item['subtotal'], 2); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                         <tfoot class="table-light">
                             <tr>
                                 <td colspan="3" class="fw-bold">Total Amount</td>
-                                <td class="text-end fw-bold text-success fs-5">$<?php echo number_format($total, 2); ?></td>
+                                <td class="text-end fw-bold text-success fs-5">ETB <?php echo number_format($total, 2); ?></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <div class="d-flex justify-content-between mb-4">
                         <span class="fw-bold">Total to Pay:</span>
-                        <span class="fw-bold text-success fs-4">$<?php echo number_format($total, 2); ?></span>
+                        <span class="fw-bold text-success fs-4">ETB <?php echo number_format($total, 2); ?></span>
                     </div>
 
                     <form method="POST">
